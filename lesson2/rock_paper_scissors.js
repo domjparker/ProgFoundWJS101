@@ -1,5 +1,5 @@
 const readline = require('readline-sync');
-VALID_CHOICES = ['rock', 'paper', 'scissors'];
+const VALID_CHOICES = ['rock', 'paper', 'scissors'];
 
 function prompt(message) {
   console.log(`=> ${message}`);
@@ -14,8 +14,8 @@ function displayWinner(choice, computerChoice) {
     (choice === 'scissors' && computerChoice === 'rock') ||
     (choice === 'paper' && computerChoice === 'scissors')) {
     prompt('Computer Wins!');
-  } else { 
-    prompt("It's a tie.") 
+  } else {
+    prompt("It's a tie.");
   }
 }
 
@@ -35,7 +35,7 @@ while (true) {
 
   displayWinner(choice, computerChoice);
 
-  prompt("Would you like to play again?")
+  prompt("Would you like to play again?");
   let answer = readline.question().toLowerCase();
   while (answer[0] !== 'n' && answer[0] !== 'y') {
     prompt('Please enter either "y" or "n".');
