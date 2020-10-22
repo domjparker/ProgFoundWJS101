@@ -1,15 +1,12 @@
 const readline = require('readline-sync');
 const VALID_CHOICES = ['rock', 'paper', 'scissors', 'lizard', 'Spock'];
-const USER_WINS = "YOU WIN this round!";
-const COMPUTER_WINS = "COMPUTER WINS this round";
-const TIE = "It's a TIE";
 
 function prompt(message) {
   console.log(`=> ${message}\n`);
 }
 
 function displayScores(userScore, computerScore) {
-  if (userScore < computerScore) {
+  if (userScore > computerScore) {
     prompt(`YOU'VE WON this competition! YOU WON ${userScore} games, while ` +
       `the computer only won ${computerScore}. This means YOU WIN!!!`);
   } else {
@@ -42,37 +39,41 @@ while (true) {
     else if (choice === 's') choice = 'scissors';
     else if (choice === 'l') choice = 'lizard';
     else if (choice === 'S') choice = 'Spock';
+    else if (choice === 'spock') choice = 'Spock';
 
-    while (!VALID_CHOICES.includes(choice)) {
+    console.clear();
+
+    if (VALID_CHOICES.includes(choice)) {
+      let randomIndex = Math.floor(Math.random() * VALID_CHOICES.length);
+      let computerChoice = VALID_CHOICES[randomIndex];
+
+      // prompt(`You chose ${choice}, computer chose ${computerChoice}`);
+
+      if ((choice === 'rock' && ((computerChoice === 'scissors') || (computerChoice === 'lizard'))) ||
+        (choice === 'paper' && ((computerChoice === 'rock') || (computerChoice === 'Spock'))) ||
+        (choice === 'scissors' && ((computerChoice === 'paper') || (computerChoice === 'lizard'))) ||
+        (choice === 'lizard' && ((computerChoice === 'paper') || (computerChoice === 'Spock'))) ||
+        (choice === 'Spock' && ((computerChoice === 'rock') || (computerChoice === 'scissors')))) {
+        userScore += 1;
+        gamesPlayed += 1;
+        prompt(`You chose ${choice}, computer chose ${computerChoice}\nYOU WIN round ${gamesPlayed}!\nUpdated Score = User: ${userScore} | Computer: ${computerScore}`);
+      } else if ((computerChoice === 'rock' && ((choice === 'scissors') || (choice === 'lizard'))) ||
+        (computerChoice === 'paper' && ((choice === 'rock') || (choice === 'Spock'))) ||
+        (computerChoice === 'scissors' && ((choice === 'paper') || (choice === 'lizard'))) ||
+        (computerChoice === 'lizard' && ((choice === 'paper') || (choice === 'Spock'))) ||
+        (computerChoice === 'Spock' && ((choice === 'rock') || (choice === 'scissors')))) {
+        computerScore += 1;
+        gamesPlayed += 1;
+        prompt(`You chose ${choice}, computer chose ${computerChoice}\nCOMPUTER WINS round ${gamesPlayed}!\nUpdated Score = User: ${userScore} | Computer: ${computerScore}`);
+      } else {
+        prompt(`You chose ${choice}, computer chose ${computerChoice}\nIt's a TIE! This round won't be counted.\nCurrent Score = User: ${userScore} | Computer: ${computerScore}`);
+      }
+    } else {
       prompt(`That's not a valid choice. Please choose again: ${VALID_CHOICES.join(', ')}`);
       choice = readline.question;
     }
-
-    let randomIndex = Math.floor(Math.random() * VALID_CHOICES.length);
-    let computerChoice = VALID_CHOICES[randomIndex];
-
-    prompt(`You chose ${choice}, computer chose ${computerChoice}`);
-
-    if ((choice === 'rock' && ((computerChoice === 'scissors') || (computerChoice === 'lizard'))) ||
-      (choice === 'paper' && ((computerChoice === 'rock') || (computerChoice === 'Spock'))) ||
-      (choice === 'scissors' && ((computerChoice === 'paper') || (computerChoice === 'lizard'))) ||
-      (choice === 'lizard' && ((computerChoice === 'paper') || (computerChoice === 'Spock'))) ||
-      (choice === 'Spock' && ((computerChoice === 'rock') || (computerChoice === 'scissors')))) {
-      userScore += 1;
-      prompt(`${USER_WINS}\nUpdated Score = User: ${userScore} | Computer: ${computerScore}`);
-      gamesPlayed += 1;
-    } else if ((computerChoice === 'rock' && ((choice === 'scissors') || (choice === 'lizard'))) ||
-      (computerChoice === 'paper' && ((choice === 'rock') || (choice === 'Spock'))) ||
-      (computerChoice === 'scissors' && ((choice === 'paper') || (choice === 'lizard'))) ||
-      (computerChoice === 'lizard' && ((choice === 'paper') || (choice === 'Spock'))) ||
-      (computerChoice === 'Spock' && ((choice === 'rock') || (choice === 'scissors')))) {
-      computerScore += 1;
-      prompt(`${COMPUTER_WINS}\nUpdated Score = User: ${userScore} | Computer: ${computerScore}`);
-      gamesPlayed += 1;
-    } else {
-      prompt(`${TIE}\nCurrent Score = User: ${userScore} | Computer: ${computerScore}`);
-    }
   }
+
   displayScores(userScore, computerScore);
 
   prompt("Would you like to play again?");
@@ -82,5 +83,8 @@ while (true) {
     answer = readline.question().toLowerCase();
   }
 
-  if (answer[0].toLowerCase() !== 'y') break;
+  if (answer[0].toLowerCase() !== 'y') {
+    prompt('Thanks for playing!!');
+    break;
+  }
 }
