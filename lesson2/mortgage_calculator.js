@@ -12,11 +12,6 @@
 // require readline for getting answers to question prompts
 const READLINE = require('readline-sync');
 
-// function to clear screen
-function clear4Lines() {
-  console.log('\n\n\n\n');
-}
-
 // function to tidy message display
 function prompt(message) {
   console.log(`\n=> ${message}`);
@@ -118,6 +113,7 @@ function repeatCalculationYesNo() {
   prompt('Would you like to do another calculation? (y/n)');
   let answerRepeat = READLINE.question();
   if (answerRepeat[0].toLocaleLowerCase() === 'y') {
+    console.clear();
     runMainProgram();
   }
 }
@@ -130,7 +126,7 @@ function runMainProgram() {
 }
 
 // Welcome
-clear4Lines();
+console.clear();
 prompt('Welcome. This is a mortgage calculator. Answer these questions to forecast the amount you would have to repay.');
 runMainProgram();
 
