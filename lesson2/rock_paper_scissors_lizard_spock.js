@@ -89,15 +89,15 @@ function displayRoundWinner(roundWinner) {
 
 function displayCompetitionWinner(userScore, computerScore) {
   if (userScore > computerScore) {
-    prompt(`YOU'VE WON this competition! YOU WON ${userScore} games, while ` +
-      `the computer only won ${computerScore}. This means YOU WIN!!!`);
+    prompt(`YOU WON ${userScore} games, while the computer only won ${computerScore}` +
+      `. This means YOU WIN THIS ROUND!!!`);
   } else {
-    prompt(`Sorry. You lost this competition! The Computer won ${computerScore}` +
-      `games, while you only won ${userScore} games. Consider another round.`);
+    prompt(`Sorry. You lost this round! The Computer won ${computerScore}` +
+      ` games, while you only won ${userScore}. Consider playing another round.`);
   }
 }
 
-function roundReset() {
+function resetRound() {
   userScore = 0;
   computerScore = 0;
   gamesPlayed = 0;
@@ -139,7 +139,7 @@ while (true) {
   }
 
   displayCompetitionWinner(userScore, computerScore);
-  roundReset();
+  resetRound();
   let playAgainAnswer = askToPlayAgain();
   let validatedPlayAgainAnswer = validatePlayAgainAnswer(playAgainAnswer);
   console.clear();
