@@ -1,11 +1,42 @@
 const readline = require('readline-sync');
 const VALID_CHOICES = ['rock', 'paper', 'scissors', 'lizard', 'Spock'];
+const NUMBER_OF_ROUNDS = 5;
 
 function prompt(message) {
   console.log(`=> ${message}\n`);
 }
 
-function displayScores(userScore, computerScore) {
+function displayGameRules() {
+  prompt('Welcome to ROCK PAPER SCISSORS LIZARD SPOCK, ' +
+    'a variation on the game ROCK PAPER SCISSORS. \n' +
+    'Here is how game play works: \n' +
+    'ROCK crushes SCISSORS & crushes LIZARD. \n' +
+    'PAPER covers ROCK & disproves SPOCK. \n' +
+    'SCISSORS cuts PAPER & decapitates LIZARD. \n' +
+    'LIZARD eats PAPER & poisons SPOCK. \n' +
+    'SPOCK smashes SCISSORS & vaporizes ROCK. \n' +
+    'Best out of 5 wins!! LETS PLAY!!!');
+}
+
+function getUserChoice() {
+  prompt(`Choose one: ${VALID_CHOICES.join(', ')}. \n` +
+    `(For ease, you may also choose: r, p, sc, l, sp`);
+  let choice = readline.question();
+  if (choice.toLowerCase() === 'r') choice = 'rock';
+  else if (choice.toLowerCase() === 'p') choice = 'paper';
+  else if (choice.toLowerCase() === 'sc') choice = 'scissors';
+  else if (choice.toLowerCase() === 'l') choice = 'lizard';
+  else if (choice.toLowerCase() === 'sp') choice = 'Spock';
+  return choice;
+}
+
+function getComputerChoice() {
+  let randomIndex = Math.floor(Math.random() * VALID_CHOICES.length);
+  let randomChoiceOfComputer = VALID_CHOICES[randomIndex];
+  return randomChoiceOfComputer;
+}
+
+function displayWinner(userScore, computerScore) {
   if (userScore > computerScore) {
     prompt(`YOU'VE WON this competition! YOU WON ${userScore} games, while ` +
       `the computer only won ${computerScore}. This means YOU WIN!!!`);
@@ -16,38 +47,18 @@ function displayScores(userScore, computerScore) {
 }
 
 console.clear();
-prompt('Welcome to this game of ROCK PAPER SCISSORS SPOCK LIZARD, ' +
-  'a variation on the game ROCK PAPER SCISSORS. \n' +
-  'Here is how game play works: \n' +
-  'ROCK crushes SCISSORS & crushes LIZARD. \n' +
-  'PAPER covers ROCK & disproves SPOCK. \n' +
-  'SCISSORS cuts PAPER & decapitates LIZARD. \n' +
-  'LIZARD eats PAPER & poisons SPOCK. \n' +
-  'SPOCK smashes SCISSORS & vaporizes ROCK. \n' +
-  'LETS PLAY!!!!!!!!!!!!!!!!!!!!');
+displayGameRules();
 
 while (true) {
   let userScore = 0;
   let computerScore = 0;
   let gamesPlayed = 0;
-  while (gamesPlayed < 5) {
-    prompt(`Choose one: ${VALID_CHOICES.join(', ')}. \n` +
-      `(For ease, you may also choose: ${VALID_CHOICES.map(choice => choice[0]).join(', ')})`);
-    let choice = readline.question();
-    if (choice === 'r') choice = 'rock';
-    else if (choice === 'p') choice = 'paper';
-    else if (choice === 's') choice = 'scissors';
-    else if (choice === 'l') choice = 'lizard';
-    else if (choice === 'S') choice = 'Spock';
-    else if (choice === 'spock') choice = 'Spock';
-
+  while (gamesPlayed < NUMBER_OF_ROUNDS) {
+    let choice = getUserChoice();
     console.clear();
 
     if (VALID_CHOICES.includes(choice)) {
-      let randomIndex = Math.floor(Math.random() * VALID_CHOICES.length);
-      let computerChoice = VALID_CHOICES[randomIndex];
-
-      // prompt(`You chose ${choice}, computer chose ${computerChoice}`);
+      let computerChoice = getComputerChoice();
 
       if ((choice === 'rock' && ((computerChoice === 'scissors') || (computerChoice === 'lizard'))) ||
         (choice === 'paper' && ((computerChoice === 'rock') || (computerChoice === 'Spock'))) ||
@@ -74,16 +85,17 @@ while (true) {
     }
   }
 
-  displayScores(userScore, computerScore);
+  displayWinner(userScore, computerScore);
 
   prompt("Would you like to play again?");
-  let answer = readline.question().toLowerCase();
+  let answer = readline.question()[0].toLowerCase();
   while (answer[0] !== 'n' && answer[0] !== 'y') {
     prompt('Please enter either "y" or "n".');
     answer = readline.question().toLowerCase();
   }
+  console.clear();
 
-  if (answer[0].toLowerCase() !== 'y') {
+  if (answer !== 'y') {
     prompt('Thanks for playing!!');
     break;
   }
