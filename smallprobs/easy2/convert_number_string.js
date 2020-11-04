@@ -23,6 +23,11 @@ integerToString(1234567890);      // "1234567890"
 
 // TODO Algorithm
 /*
+function takes in a number.
+create empty array.
+while there is a number, get remainder of dividing number by 10 and push it 
+into array. number is then equal to number divided by 10, rounded down.
+return result of reversing array and joining into a string.
 
 */
 // TODO Code
@@ -36,6 +41,25 @@ function integerToString(num) {
   let result = digits.reverse().join(''); 
   return result;
 }
+
+/*
+alteratively, could be written like this...
+
+const DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+function integerToString(number) {
+  let result = '';
+
+  do {
+    let remainder = number % 10;
+    number = Math.floor(number / 10);
+
+    result = DIGITS[remainder] + result;
+  } while (number > 0);
+
+  return result;
+}
+*/
 
 console.log(integerToString(4321));      // "4321"
 console.log(integerToString(0));         // "0"
