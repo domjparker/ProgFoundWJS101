@@ -63,3 +63,27 @@ function isColorValid(color) {
 let isColorValid = color => color === "blue" || color === "green";
 // or 
 const isColorValid = color => ["blue", "green"].includes(color);
+
+
+
+// .slice() as it relates to variables as pointers, with regards to primitives and objects.
+
+let arr1 = [{ first: "value1" }, { second: "value2" }, 3, 4, 5];
+let arr2 = arr1.slice();
+arr2[0].first = 42;
+console.log(arr1);
+//[ { first: 42 }, { second: 'value2' }, 3, 4, 5 ]
+
+let arr1 = [1, 2, 3];
+let arr2 = arr1.slice();
+arr2[0] = 4;
+console.log(arr1);
+// [1, 2, 3]
+
+
+let arr1 = [1, 2, 3];
+let arr2 = arr1;
+arr2[0] = 4;
+console.log(arr1);
+// [ 4, 2, 3 ]
+
