@@ -48,3 +48,25 @@ let interleave = (array1, array2) => {
 }
 
 interleave([1, 2, 3], ['a', 'b', 'c']);    // [1, "a", 2, "b", 3, "c"]
+
+// or
+
+let interleave = (array1, array2) => {
+  let result = [];
+  array1.forEach((element, index) => {
+    result.push(element, array2[index]);
+  })
+  return result;
+}
+
+interleave([1, 2, 3], ['a', 'b', 'c']);    // [1, "a", 2, "b", 3, "c"]
+
+// or
+
+let interleave = (array1, array2) => {
+  return array1.map((element, index) => {
+    return [element].concat(array2[index]); // concatenates an element from array2 to every array1 element, leaving sub arrays
+  }).flat(); // which then just need to be flattened into one array.
+}
+
+interleave([1, 2, 3], ['a', 'b', 'c']);    // [1, "a", 2, "b", 3, "c"]
