@@ -1,80 +1,42 @@
 /*
-
+Write a function that takes two array arguments, each containing a list of 
+numbers, and returns a new array that contains the product of each pair of 
+numbers from the arguments that have the same index. You may assume that the 
+arguments contain the same number of elements.
 */
 // TODO Problem
 /*
 Explicit Requirements:
- - INPUT = two arrays
- - OUTPUT = one array that has the union of the values from the two input arrays.
- - RULES = 
-  - no duplication of values, even if either or both values have a duplication in themselves.
+ - INPUT = two arrays that contain list of numbers
+ - OUTPUT = one new array of numbers
+ - RULES = each number in the resulting array must be the multiple of the
+ integers from the given index in both arrays.
 
 Implicit Requirements:
- - union means the values are not added, but simply the arrays.
-
-Questions:  
- - what type of values can these arrays contain? Any?
- - what does union mean? addition of the values or the arrays?
- - what happens to the original arrays? should they both be unchanged/unmutated after the function is called?
- - can there be arrays or objects within either or both of the arrays?
- - does the resulting array need to have a specific order?
+ - resulting array will have the same amount of elements as both the input 
+ arrays.
+Questions: 
+ - what about for zeros? 
 */
 // TODO Examples
 /*
-union([1, 3, 5], [3, 6, 9]);    // [1, 3, 5, 6, 9]
+multiplyList([3, 5, 7], [9, 10, 11]);    // [27, 50, 77]
 */
 // TODO Data Structures
-// arrays of values.
+// arrays of integers
 // TODO Algorithm
 /*
-- create a function that takes in two arrays.
-- add both arrays into one large array.
-- remove any duplicates.
-  - create empty result array.
-  - for each element in the large array
-    - set element as root element
-    - for each element beyond root element until length of array, check if root element has an equal.
-    - if root element has an equal, continue to next root element.
-    - else push it into the result array.
-- return result array.
+function takes in 2 arrays.
+for each element in array1, multiply by element at same index in array2.
+ - return each resulting integer element into new array.
+return new array.
 */
 // TODO Code
 
-function union(array1, array2) {
-  let unfilteredArray = array1.concat(array2);
-  let filteredArray = [];
-  for (let i = 0; i < unfilteredArray.length; i += 1) {
-    let rootElement = unfilteredArray[i];
-    if (!filteredArray.includes(rootElement)) {
-      filteredArray.push(rootElement);
-    }
-  }
-  return filteredArray;
+function multiplyList(array1, array2) {
+  return array1.reduce((acc, curr, index) => {
+    return [...acc, curr * array2[index]]
+  }, []);
 }
 
-console.log(union([1, 3, 5], [3, 6, 9]));     // [1, 3, 5, 6, 9]
-let value1 = "value1";
-console.log(union([1, 3, { key: value1 }, 5], [3, 6, [2, 4], 9]));
-
-// or this way...
-
-function copyNonDuplicates(finalArray, argumentArray) {
-  for (let i = 0; i < argumentArray.length; i += 1) {
-    if (!finalArray.includes(argumentArray[i])) {
-      finalArray.push(argumentArray[i]);
-    }
-  }
-}
-
-function union() {
-  let finalArray = [];
-  for (let idx = 0; idx < arguments.length; idx += 1) {
-    copyNonDuplicates(finalArray, arguments[idx]);
-  }
-
-  return finalArray;
-}
-
-console.log(union([1, 3, 5], [3, 6, 9]));     // [1, 3, 5, 6, 9]
-let value1 = "value1";
-console.log(union([1, 3, { key: value1 }, 5], [3, 6, [2, 4], 9]));  
+multiplyList([3, 5, 7], [9, 10, 11]);    // [27, 50, 77]

@@ -70,3 +70,13 @@ let interleave = (array1, array2) => {
 }
 
 interleave([1, 2, 3], ['a', 'b', 'c']);    // [1, "a", 2, "b", 3, "c"]
+
+// or
+
+let interleave = (array1, array2) => {
+  return array1.reduce((accumulator, currentValue, index) => {
+    return [...accumulator, currentValue, array2[index]];
+  }, []);
+}
+
+interleave([1, 2, 3], ['a', 'b', 'c']);    // [1, "a", 2, "b", 3, "c"]
