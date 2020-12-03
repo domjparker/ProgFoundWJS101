@@ -47,3 +47,31 @@ function sequence(num) {
 sequence(5);    // [1, 2, 3, 4, 5]
 sequence(3);    // [1, 2, 3]
 sequence(1);    // [1]
+
+// or...
+
+function sequence(num) {
+  let initialArray = Array(num);
+  let resultArray = initialArray.fill().map((_, idx) => {
+    return idx + 1;
+  })
+  return resultArray;
+}
+
+sequence(5);    // [1, 2, 3, 4, 5]
+sequence(3);    // [1, 2, 3]
+sequence(1);    // [1]
+
+// or...
+
+function sequence(num) {
+  return [...Array(num + 1).keys()].slice(1);
+}
+
+
+// or...// forEach
+function sequence(num) {
+  let result = [];
+  [...Array(num).keys()].forEach(num => result.push(num + 1));
+  return result;
+}
