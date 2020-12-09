@@ -50,7 +50,7 @@ function doubleNumbers(numbers) {
     let currentNum = numbers[counter];
     numbers.splice(counter, 1, currentNum *= 2);
     console.log(numbers)
-
+s
     counter += 1;
   }
 
