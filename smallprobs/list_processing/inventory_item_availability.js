@@ -76,3 +76,20 @@ function isItemAvailable(itemNum, transActArr) {
 isItemAvailable(101, transactions);     // false
 isItemAvailable(103, transactions);     // false
 isItemAvailable(105, transactions);     // true
+
+
+// or ...
+
+function isItemAvailable(item, transactions) {
+  let quantity = transactionsFor(item, transactions).reduce(
+    (sum, transaction) => {
+      if (transaction.movement === "in") {
+        return sum + transaction.quantity;
+      } else {
+        return sum - transaction.quantity;
+      }
+    },
+    0
+  );
+  return quantity > 0;
+}
