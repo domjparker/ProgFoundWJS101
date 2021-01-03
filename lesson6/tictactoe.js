@@ -1,4 +1,7 @@
-let readline = require("readline-sync");
+const readline = require("readline-sync");
+const EMPTY_SPACE = ' ';
+const HUMAN_MARKER = 'X';
+const COMPUTER_MARKER = 'O';
 
 // Function Definitions
 
@@ -21,9 +24,6 @@ function displayBoard(board) {
   console.log(' ')
 }
 
-const EMPTY_SPACE = ' ';
-const HUMAN_MARKER = 'X';
-const COMPUTER_MARKER = 'O';
 
 function initializeBoard() {
   let board = {};
@@ -45,11 +45,23 @@ function emptySquares(board) {
   return Object.keys(board).filter(key => board[key] === EMPTY_SPACE);
 }
 
+function joinOr(array, punctuation = ', ', conjunction = 'or') {
+  if (array.length < 2) return array.toString();
+  else if (array.length === 2) {
+    return `${array.slice(0, 1).toString()} ${conjunction} ${array.slice(1).toString()}`; 
+  } else {
+    return `${array.slice(0, (array.length - 1))
+      .map(element => element + punctuation)
+      .join('')}${conjunction} ${array.slice(array.length - 1)
+      .toString()}`
+  }
+}
+
 function playerChoosesSquare(board) {
   let chosenSquare;
 
   while (true) {
-    prompt(`Choose an available square (${emptySquares(board).join(", ")})`);
+    prompt(`Choose an available square (${joinOr(emptySquares(board))})`);
     chosenSquare = readline.question().trim();
     if (emptySquares(board).includes(chosenSquare)) break;
 
