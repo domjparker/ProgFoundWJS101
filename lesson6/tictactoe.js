@@ -25,6 +25,13 @@ function displayBoard(board) {
   console.log(' ')
 }
 
+function chooseFirstMover() {
+  prompt(`Who should make the first move? (me, computer, or random)`);
+  let answer = READLINE.question().trim().toLowerCase();
+  if (answer[0] === 'm') return "player";
+  else if (answer[0] === 'c') return "computer";
+  else return "random";
+}
 
 function initializeBoard() {
   let board = {};
@@ -126,6 +133,8 @@ function computerChoosesSquare(board) {
     square = winningMove;
   } else if (threatenedSquare !== false) {
     square = threatenedSquare;
+  } else if (board['5'] === EMPTY_SPACE) {
+    square = 5;
   } else {
     let randomIdx = Math.floor(Math.random() * emptySquares(board).length);
     square = emptySquares(board)[randomIdx];
@@ -167,21 +176,54 @@ function someoneWinsRound(board) {
 while (true) {
   let human_score = 0;
   let computer_score = 0;
+  let firstMover = chooseFirstMover();
+  let firstMove;
+  if (firstMover === 'random') firstMove = randomNum = Math.floor(Math.random() * 2);
 
   while (human_score < WINNING_SCORE && computer_score < WINNING_SCORE) {
     let board = initializeBoard();
 
     while (true) {
       console.clear();
+
       prompt(`YOUR SCORE: ${human_score}`);
       prompt(`COMPUTER SCORE: ${computer_score}`);
-      displayBoard(board);
 
-      playerChoosesSquare(board);
-      if (someoneWinsRound(board) || boardIsFull(board)) break;
+      if (firstMover === "player") {
+        displayBoard(board);
 
-      computerChoosesSquare(board);
-      if (someoneWinsRound(board) || boardIsFull(board)) break;
+        playerChoosesSquare(board);
+        if (someoneWinsRound(board) || boardIsFull(board)) break;
+
+        computerChoosesSquare(board);
+        if (someoneWinsRound(board) || boardIsFull(board)) break;
+      } else if (firstMover === 'computer') {
+        computerChoosesSquare(board);
+        if (someoneWinsRound(board) || boardIsFull(board)) break;
+
+        displayBoard(board);
+
+        playerChoosesSquare(board);
+        if (someoneWinsRound(board) || boardIsFull(board)) break;
+      } else {
+        if (randomNum === 0) {
+          displayBoard(board);
+
+          playerChoosesSquare(board);
+          if (someoneWinsRound(board) || boardIsFull(board)) break;
+
+          computerChoosesSquare(board);
+          if (someoneWinsRound(board) || boardIsFull(board)) break;
+        } else {
+          computerChoosesSquare(board);
+          if (someoneWinsRound(board) || boardIsFull(board)) break;
+
+          displayBoard(board);
+
+          playerChoosesSquare(board);
+          if (someoneWinsRound(board) || boardIsFull(board)) break;
+        }
+      }
     }
 
     displayBoard(board);
@@ -198,10 +240,16 @@ while (true) {
   if (human_score === WINNING_SCORE) prompt(`YOU WON the match!\n`);
   else prompt(`COMPUTER WON the match!\n`);
 
-  prompt("Would you like to play again (Y or N)?");
-  let playAgainAnswer = READLINE.question().toLowerCase()[0];
+  let playAgainAnswer;
 
-  if (playAgainAnswer !== 'y') break;
+  while (true) {
+    prompt("Would you like to play again (Y or N)?");
+    playAgainAnswer = READLINE.question().trim().toLowerCase();
+    if (playAgainAnswer[0] === 'y' || playAgainAnswer[0] === 'n') break;
+    prompt("Please enter a valid answer.")
+  }
+
+  if (playAgainAnswer[0] !== 'y') break;
 }
 
 prompt("Thanks for playing Tic Tac Toe!")
