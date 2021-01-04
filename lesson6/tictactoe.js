@@ -3,6 +3,8 @@ const EMPTY_SPACE = ' ';
 const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
 const WINNING_SCORE = 3;
+const WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]];
+
 
 // Function Definitions
 
@@ -69,24 +71,45 @@ function playerChoosesSquare(board) {
   board[chosenSquare] = HUMAN_MARKER;
 }
 
-function isThreat(board) {
-  let winningLines = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]];
+function isWinningMove(board) {
+  for (line of WINNING_LINES) {
+    let [sq1, sq2, sq3] = line; // destructures the current array
 
-  for (line of winningLines) {
+    if (
+      board[sq1] === COMPUTER_MARKER &&
+      board[sq2] === COMPUTER_MARKER &&
+      board[sq3] === EMPTY_SPACE
+    ) return sq3;
+    else if (
+      board[sq1] === COMPUTER_MARKER &&
+      board[sq2] === EMPTY_SPACE &&
+      board[sq3] === COMPUTER_MARKER
+    ) return sq2;
+    else if (
+      board[sq1] === EMPTY_SPACE &&
+      board[sq2] === COMPUTER_MARKER &&
+      board[sq3] === COMPUTER_MARKER
+    ) return sq1;
+  }
+  return false;
+}
+
+function isThreat(board) {
+  for (line of WINNING_LINES) {
     let [sq1, sq2, sq3] = line; // destructures the current array
 
     if (
       board[sq1] === HUMAN_MARKER &&
       board[sq2] === HUMAN_MARKER &&
-      board[sq3] === ' '
+      board[sq3] === EMPTY_SPACE
     ) return sq3;
     else if (
       board[sq1] === HUMAN_MARKER &&
-      board[sq2] === ' ' &&
+      board[sq2] === EMPTY_SPACE &&
       board[sq3] === HUMAN_MARKER
     ) return sq2;
     else if (
-      board[sq1] === ' ' &&
+      board[sq1] === EMPTY_SPACE &&
       board[sq2] === HUMAN_MARKER &&
       board[sq3] === HUMAN_MARKER
     ) return sq1;
@@ -95,14 +118,19 @@ function isThreat(board) {
 }
 
 function computerChoosesSquare(board) {
-  let threat = isThreat(board);
-  if (threat !== false) {
-    board[threat] = COMPUTER_MARKER;
+  let square;
+  let winningMove = isWinningMove(board);
+  let threatenedSquare = isThreat(board);
+
+  if (winningMove !== false) {
+    square = winningMove;
+  } else if (threatenedSquare !== false) {
+    square = threatenedSquare;
   } else {
     let randomIdx = Math.floor(Math.random() * emptySquares(board).length);
-
-    board[emptySquares(board)[randomIdx]] = COMPUTER_MARKER;
+    square = emptySquares(board)[randomIdx];
   }
+  return board[square] = COMPUTER_MARKER;
 }
 
 function boardIsFull(board) {
@@ -110,9 +138,7 @@ function boardIsFull(board) {
 }
 
 function detectRoundWinner(board) {
-  let winningLines = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]];
-
-  for (line of winningLines) {
+  for (line of WINNING_LINES) {
     let [sq1, sq2, sq3] = line; // destructures the current array
 
     if (
