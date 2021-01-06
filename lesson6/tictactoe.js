@@ -30,7 +30,11 @@ function chooseFirstMover() {
   let answer = READLINE.question().trim().toLowerCase();
   if (answer[0] === 'm') return "player";
   else if (answer[0] === 'c') return "computer";
-  else return "random";
+  else if (answer[0] === 'r') {
+    let randomNum = Math.floor(Math.random() * 2);
+    if (randomNum === 0) return "player";
+    else return "computer";
+  }
 }
 
 function initializeBoard() {
@@ -66,6 +70,8 @@ function joinOr(array, punctuation = ', ', conjunction = 'or') {
 }
 
 function playerChoosesSquare(board) {
+  displayBoard(board);
+
   let chosenSquare;
 
   while (true) {
@@ -146,6 +152,15 @@ function boardIsFull(board) {
   return emptySquares(board).length === 0;
 }
 
+function chooseSquare(board, currentPlayer) {
+  if (currentPlayer === 'player') playerChoosesSquare(board);
+  else computerChoosesSquare(board);
+}
+
+function alternatePlayer(currentPlayer) {
+  return currentPlayer === 'player' ? 'computer' : 'player';
+}
+
 function detectRoundWinner(board) {
   for (line of WINNING_LINES) {
     let [sq1, sq2, sq3] = line; // destructures the current array
@@ -173,57 +188,25 @@ function someoneWinsRound(board) {
 
 // Game Initialization
 
-while (true) {
+while (true) { // match setup
   let human_score = 0;
   let computer_score = 0;
-  let firstMover = chooseFirstMover();
-  let firstMove;
-  if (firstMover === 'random') firstMove = randomNum = Math.floor(Math.random() * 2);
+  console.clear();
+  let currentPlayer = chooseFirstMover();
 
-  while (human_score < WINNING_SCORE && computer_score < WINNING_SCORE) {
+  while (human_score < WINNING_SCORE && computer_score < WINNING_SCORE) { // individual round setup
     let board = initializeBoard();
 
-    while (true) {
+    while (true) { // each player gets one turn. first player depends on who was decided in match setup.
       console.clear();
 
       prompt(`YOUR SCORE: ${human_score}`);
       prompt(`COMPUTER SCORE: ${computer_score}`);
 
-      if (firstMover === "player") {
-        displayBoard(board);
-
-        playerChoosesSquare(board);
-        if (someoneWinsRound(board) || boardIsFull(board)) break;
-
-        computerChoosesSquare(board);
-        if (someoneWinsRound(board) || boardIsFull(board)) break;
-      } else if (firstMover === 'computer') {
-        computerChoosesSquare(board);
-        if (someoneWinsRound(board) || boardIsFull(board)) break;
-
-        displayBoard(board);
-
-        playerChoosesSquare(board);
-        if (someoneWinsRound(board) || boardIsFull(board)) break;
-      } else {
-        if (randomNum === 0) {
-          displayBoard(board);
-
-          playerChoosesSquare(board);
-          if (someoneWinsRound(board) || boardIsFull(board)) break;
-
-          computerChoosesSquare(board);
-          if (someoneWinsRound(board) || boardIsFull(board)) break;
-        } else {
-          computerChoosesSquare(board);
-          if (someoneWinsRound(board) || boardIsFull(board)) break;
-
-          displayBoard(board);
-
-          playerChoosesSquare(board);
-          if (someoneWinsRound(board) || boardIsFull(board)) break;
-        }
-      }
+      chooseSquare(board, currentPlayer);
+      currentPlayer = alternatePlayer(currentPlayer);
+      
+      if (someoneWinsRound(board) || boardIsFull(board)) break;
     }
 
     displayBoard(board);
