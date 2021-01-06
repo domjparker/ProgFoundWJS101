@@ -3,25 +3,46 @@ const EMPTY_SPACE = ' ';
 const HUMAN_MARKER = 'X';
 const COMPUTER_MARKER = 'O';
 const WINNING_SCORE = 3;
-const WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]];
+const WINNING_LINES = [
+// horizontal winning lines
+  [1, 2, 3], [2, 3, 4], [3, 4, 5], [6, 7, 8], [7, 8, 9],
+  [8, 9, 10], [11, 12, 13], [12, 13, 14], [13, 14, 15], [16, 17, 18],
+  [17, 18, 19], [18, 19, 20], [21, 22, 23], [22, 23, 24], [23, 24, 25],
+// vertical winning lines
+  [1, 6, 7], [6, 7, 11], [11, 16, 21], [2, 7, 12], [7, 12, 17], [12, 17, 22],
+  [3, 8, 13], [8, 13, 18], [13, 18, 23], [4, 9, 14], [9, 14, 19], [14, 19, 24],
+  [5, 10, 15], [10, 15, 20], [15, 20, 25],
+// diagonal winning lines
+  [1, 7, 13], [2, 8, 14], [3, 9, 15], [6, 12, 18], [7, 13, 19], [8, 14, 20],
+  [11, 17, 23], [12, 18, 24], [13, 19, 25],
+// diagonal winning lines
+  [11, 7, 3], [12, 8, 4], [13, 9, 5], [16, 12, 8], [17, 13, 9], [18, 14, 10],
+  [21, 17, 13], [22, 18, 14], [23, 19, 15]
+];
 
 
 // Function Definitions
 
 function displayBoard(board) {
   console.log(`You are '${HUMAN_MARKER}'. Computer is '${COMPUTER_MARKER}'.`)
-  console.log(' _________________')
-  console.log('|     |     |     |');
-  console.log(`|  ${board['1']}  |  ${board['2']}  |  ${board['3']}  |`);
-  console.log('|     |     |     |');
-  console.log('|-----+-----+-----|');
-  console.log('|     |     |     |');
-  console.log(`|  ${board['4']}  |  ${board['5']}  |  ${board['6']}  |`);
-  console.log('|     |     |     |');
-  console.log('|-----+-----+-----|');
-  console.log('|     |     |     |');
-  console.log(`|  ${board['7']}  |  ${board['8']}  |  ${board['9']}  |`);
-  console.log('|_____|_____|_____|');
+  console.log(' _____________________________')
+  console.log('|     |     |     |     |     |');
+  console.log(`|  ${board['1']}  |  ${board['2']}  |  ${board['3']}  |  ${board['4']}  |  ${board['5']}  |`);
+  console.log('|     |     |     |     |     |');
+  console.log('|-----+-----+-----+-----+-----|');
+  console.log('|     |     |     |     |     |');
+  console.log(`|  ${board['6']}  |  ${board['7']}  |  ${board['8']}  |  ${board['9']}  |  ${board['10']}  |`);
+  console.log('|     |     |     |     |     |            Example Squares:');
+  console.log('|-----+-----+-----+-----+-----|             | 1 | 2 | 3 | 4 | 5 |');
+  console.log('|     |     |     |     |     |             | 6 | 7 | 8 | 9 | 10|');
+  console.log(`|  ${board['11']}  |  ${board['12']}  |  ${board['13']}  |  ${board['14']}  |  ${board['15']}  |             | 11| 12| 13| 14| 15|`);
+  console.log('|-----+-----+-----+-----+-----|             | 16| 17| 18| 19| 20|');
+  console.log('|     |     |     |     |     |             | 21| 22| 23| 24| 25|');
+  console.log(`|  ${board['16']}  |  ${board['17']}  |  ${board['18']}  |  ${board['19']}  |  ${board['20']}  |`);
+  console.log('|-----+-----+-----+-----+-----|');
+  console.log('|     |     |     |     |     |');
+  console.log(`|  ${board['21']}  |  ${board['22']}  |  ${board['23']}  |  ${board['24']}  |  ${board['25']}  |`);
+  console.log('|_____|_____|_____|_____|_____|');
   console.log(' ')
 }
 
@@ -41,7 +62,7 @@ function initializeBoard() {
   let board = {};
 
   let counter = 1;
-  while (counter <= 9) {
+  while (counter <= 25) {
     board[String(counter)] = EMPTY_SPACE;
     counter += 1;
   }
@@ -140,7 +161,7 @@ function computerChoosesSquare(board) {
   } else if (threatenedSquare !== false) {
     square = threatenedSquare;
   } else if (board['5'] === EMPTY_SPACE) {
-    square = 5;
+    square = 13;
   } else {
     let randomIdx = Math.floor(Math.random() * emptySquares(board).length);
     square = emptySquares(board)[randomIdx];
@@ -205,7 +226,7 @@ while (true) { // match setup
 
       chooseSquare(board, currentPlayer);
       currentPlayer = alternatePlayer(currentPlayer);
-      
+
       if (someoneWinsRound(board) || boardIsFull(board)) break;
     }
 
