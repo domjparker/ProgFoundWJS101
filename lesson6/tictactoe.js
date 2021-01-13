@@ -24,6 +24,12 @@ const WINNING_LINES = [
 
 // Function Definitions
 
+function gameInstructions() {
+  console.log(`\n\n\n\n\nWelcome to this game of Tic Tac Toe!`);
+  console.log(`Try to get 3 'X's in a row before the computer does.`);
+  console.log(`The first to win 3 rounds is the winner of the match.\n\n`);
+}
+
 function displayBoard(board, options, score) {
   console.log(`You are '${HUMAN_MARKER}'. Computer is '${COMPUTER_MARKER}'.`);
   console.log(' _______________________________________');
@@ -50,17 +56,24 @@ function displayBoard(board, options, score) {
 }
 
 function chooseFirstMover() {
-  let firstMover;
-  prompt(`Who should make the first move? (me, computer, or random)`);
-  let answer = READLINE.question().trim().toLowerCase();
-  if (answer[0] === 'm') firstMover = "player";
-  else if (answer[0] === 'c') firstMover = "computer";
-  else if (answer[0] === 'r') {
-    let randomNum = Math.floor(Math.random() * 2);
-    if (randomNum === 0) firstMover = "player";
-    else firstMover = "computer";
+  while (true) {
+    prompt(`Who should make the first move? (me, computer, or random)`);
+    let answer = READLINE.question().trim().toLowerCase();
+    if (answer[0] === 'm') return "player";
+    else if (answer[0] === 'c') return "computer";
+    else if (answer[0] === 'r') {
+      let randomNum = Math.floor(Math.random() * 2);
+      if (randomNum === 0) return "player";
+      else return "computer";
+    } else {
+      prompt(`Please enter a valid answer.`);
+    }
   }
-  return firstMover;
+}
+
+function someoneNotYetWonMatch(score) {
+  return (score.humanScore < WINNING_SCORE && score.computerScore <
+    WINNING_SCORE);
 }
 
 function initializeBoard() {
@@ -144,8 +157,8 @@ function isWinningMove(board) {
       board[sq2] === COMPUTER_MARKER &&
       board[sq3] === COMPUTER_MARKER
     ) return sq1;
-  } 
-  
+  }
+
   return false;
 }
 
@@ -231,6 +244,24 @@ function someoneWinsRound(board) {
   return detectRoundWinner(board);
 }
 
+function updateScore(winner, score) {
+  if (winner === 'You') score.humanScore += 1;
+  if (winner === 'Computer') score.computerScore += 1;
+}
+
+function playAgain() {
+  let playAgainAnswer;
+
+  while (true) {
+    prompt("Would you like to play again (Y or N)?");
+    playAgainAnswer = READLINE.question().trim().toLowerCase();
+    if (playAgainAnswer[0] === 'y' || playAgainAnswer[0] === 'n') break;
+    prompt("Please enter a valid answer.");
+  }
+
+  return playAgainAnswer;
+}
+
 // Game Initialization
 
 while (true) { // match setup
@@ -240,15 +271,15 @@ while (true) { // match setup
   };
 
   console.clear();
+  gameInstructions();
   let firstMover = chooseFirstMover();
   let currentPlayer = firstMover;
 
-  while (score.humanScore < WINNING_SCORE && score.computerScore <
-    WINNING_SCORE) { // individual round setup
+  while (someoneNotYetWonMatch(score)) { // individual round setup
     let board = initializeBoard();
     let options = initializeOptions();
 
-    while (true) { // each player gets one turn. first mover depends on who was decided in match setup.
+    while (true) { // each player gets a turn. first mover depends on who was decided in match setup.
       console.clear();
 
       chooseSquare(board, currentPlayer, options, score);
@@ -259,8 +290,7 @@ while (true) { // match setup
 
     if (someoneWinsRound(board)) {
       let winner = detectRoundWinner(board);
-      if (winner === 'You') score.humanScore += 1;
-      if (winner === 'Computer') score.computerScore += 1;
+      updateScore(winner, score);
       prompt(`${winner} won this round!`);
       displayBoard(board, options, score);
     } else {
@@ -268,24 +298,17 @@ while (true) { // match setup
       prompt(`This round was a tie!`);
     }
 
-    if (score.humanScore < WINNING_SCORE && score.computerScore <
-      WINNING_SCORE) {
-      prompt(`Press any key to continue`);
+    if (someoneNotYetWonMatch(score)) {
+      prompt(`Press the 'enter' key to continue`);
       READLINE.question();
+      console.clear();  // may not be necessary
       currentPlayer = firstMover;
     } else if (score.humanScore === WINNING_SCORE) prompt(`YOU WON the match!\n`);
     else prompt(`COMPUTER WON the match!\n`);
 
   }
 
-  let playAgainAnswer;
-
-  while (true) {
-    prompt("Would you like to play again (Y or N)?");
-    playAgainAnswer = READLINE.question().trim().toLowerCase();
-    if (playAgainAnswer[0] === 'y' || playAgainAnswer[0] === 'n') break;
-    prompt("Please enter a valid answer.");
-  }
+  let playAgainAnswer = playAgain();
 
   if (playAgainAnswer[0] !== 'y') break;
 }
