@@ -44,11 +44,18 @@ function gameIntro() {
   followed by the dealer. If you go over 21, you 'bust' (lose). 
   If you 'stay', it is then the dealer's turn. The dealer may 
   'bust' (you win). If the dealer chooses to 'stay', then whoever
-  has the higher sum hand value in the end, wins!\n`);
+  has the higher sum hand value in the end, wins!\n
+  The game here will consist of multiple rounds. Whoever scores 3
+  points first, wins the game.\n`);
 }
 
 // Displays current hands, with dealer's last card hidden
-function displayHands(playerHand, dealerHand, showHidden) {
+function displayHands(playerHand, dealerHand, gameStats , showHidden) {
+  console.log('  ---------------------------------------------------------');
+  console.log(`  GAME STATS :`);
+  console.log(`  Your Score : ${gameStats["playerScore"]}`);
+  console.log(`  Dealer Score : ${gameStats["dealerScore"]}`);
+  console.log(`  Current Round Number : ${gameStats["roundNum"]}`);
   console.log('  ---------------------------------------------------------');
   console.log(`  PLAYER HAND :`);
   playerHand.forEach(card => console.log(`  ${card[1]} of ${card[0]}`));
@@ -109,84 +116,96 @@ function playAgain() {
 // GAME SETUP LOOP
 while (true) {
   console.clear();
-  let deck = initializeDeck();
-
-  // initial hands deal
-  let playerHand = dealInitialCards(deck);
-  let dealerHand = dealInitialCards(deck);
-  let whoBusted;
-
   gameIntro();
-  prompt(`Press 'Enter' to start the game.`);
+  let gameStats = {playerScore: 0, dealerScore: 0, roundNum: 0};
+
+  prompt(`Press 'Enter' to start the start the game.`);
   READLINE.question();
 
-  // PLAYER TURN LOOP
-  while (true) {
-    console.clear();
-    displayHands(playerHand, dealerHand, 'noShow');
-    let playerAnswer;
+  while (gameStats["playerScore"] < 4 && gameStats["dealerScore"] < 4) {
+    let deck = initializeDeck();
 
-    while (true) {
-      prompt("hit or stay? (h/s)");
-      playerAnswer = READLINE.question().toLowerCase();
-      if (['h', 's'].includes(playerAnswer)) break;
-      prompt("Please enter a valid answer.");
-    }
+    // initial hands deal
+    let playerHand = dealInitialCards(deck);
+    let dealerHand = dealInitialCards(deck);
+    let whoBusted;
 
-    if (playerAnswer === 's') {
-      prompt("You chose to stay! Press 'Enter' to let DEALER to take a card.");
-      READLINE.question();
-      break;
-    } else if (playerAnswer === 'h') {
-      playerHand.push(deck.shift());
-      if (busted(playerHand)) {
-        whoBusted = "player";
-        break;
-      }
-    }
-  }
-
-  if (!busted(playerHand)) {
-    // DEALER TURN LOOP
+    // PLAYER TURN LOOP
     while (true) {
       console.clear();
-      if (sumHandValue(dealerHand) >= 17) {
-        displayHands(playerHand, dealerHand, 'noShow');
-        prompt("DEALER stays. Press 'Enter' to find out who wins.");
-        READLINE.question();
-        break;
-      } else if (busted(dealerHand)) {
-        whoBusted = "dealer";
-        break;
+      displayHands(playerHand, dealerHand, gameStats, 'noShow');
+      let playerAnswer;
+
+      while (true) {
+        prompt("hit or stay? (h/s)");
+        playerAnswer = READLINE.question().toLowerCase();
+        if (['h', 's'].includes(playerAnswer)) break;
+        prompt("Please enter a valid answer.");
       }
-      else {
-        dealerHand.push(deck.shift());
-        displayHands(playerHand, dealerHand, 'noShow');
-        prompt("DEALER has taken a card. Press 'Enter' to continue.");
+
+      if (playerAnswer === 's') {
+        prompt("You chose to stay! Press 'Enter' to let DEALER to take a card.");
         READLINE.question();
+        break;
+      } else if (playerAnswer === 'h') {
+        playerHand.push(deck.shift());
+        if (busted(playerHand)) {
+          whoBusted = "player";
+          break;
+        }
       }
     }
+
+    if (!busted(playerHand)) {
+      // DEALER TURN LOOP
+      while (true) {
+        console.clear();
+        if (sumHandValue(dealerHand) >= 17) {
+          displayHands(playerHand, dealerHand, gameStats, 'noShow');
+          prompt("DEALER stays. Press 'Enter' to find out who wins.");
+          READLINE.question();
+          break;
+        } else if (busted(dealerHand)) {
+          whoBusted = "dealer";
+          break;
+        }
+        else {
+          dealerHand.push(deck.shift());
+          displayHands(playerHand, dealerHand, gameStats, 'noShow');
+          prompt("DEALER has taken a card. Press 'Enter' to continue.");
+          READLINE.question();
+        }
+      }
+    }
+
+    console.clear();
+    displayHands(playerHand, dealerHand, gameStats, 'show');
+    let playerHandTotal = sumHandValue(playerHand);
+    let dealerHandTotal = sumHandValue(dealerHand);
+
+    // COMPARE CARDS + DECLARE WINNER
+    if (whoBusted === 'player') {
+      console.log('  +++ YOU BUSTED! DEALER WINS! +++\n');
+      gameStats["dealerScore"]++;
+    } else if (whoBusted === 'dealer') {
+      console.log('  +++ DEALER BUSTED! YOU WIN! +++\n');
+      gameStats["playerScore"]++;
+    } else if (playerHandTotal > dealerHandTotal) {
+      console.log('  +++ YOU WON! +++\n');
+      gameStats["playerScore"]++;
+    } else if (playerHandTotal < dealerHandTotal) {
+      console.log('  +++ DEALER WON +++\n');
+      gameStats["dealerScore"]++;
+    } else console.log('  +++ YOU and DEALER TIED +++\n');
+
+    gameStats["roundNum"]++;
+
+    prompt(`YOUR HAND's total value was ${playerHandTotal}`);
+    prompt(`The DEALER's HAND's total value was ${dealerHandTotal}\n`);
+
+    prompt(`Press 'Enter' to continue.`);
+    READLINE.question();
   }
-
-  console.clear();
-  displayHands(playerHand, dealerHand, 'show');
-  let playerHandTotal = sumHandValue(playerHand);
-  let dealerHandTotal = sumHandValue(dealerHand);
-
-  // COMPARE CARDS + DECLARE WINNER
-  if (whoBusted === 'player') {
-    console.log('  +++ YOU BUSTED! DEALER WINS! +++\n');
-  } else if (whoBusted === 'dealer') {
-    console.log('  +++ DEALER BUSTED! YOU WIN! +++\n');
-  } else if (playerHandTotal > dealerHandTotal) {
-    console.log('  +++ YOU WON! +++\n');
-  } else if (playerHandTotal < dealerHandTotal) {
-    console.log('  +++ DEALER WON +++\n');
-  } else console.log('  +++ YOU and DEALER TIED +++\n');
-
-  prompt(`YOUR HAND's total value was ${playerHandTotal}`);
-  prompt(`The DEALER's HAND's total value was ${dealerHandTotal}`);
-
 
   // play again decision
   let playAgainAnswer = playAgain();
