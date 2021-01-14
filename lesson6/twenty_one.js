@@ -2,6 +2,15 @@ const READLINE = require("readline-sync");
 const CARD_VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
 const SUITS = ['♥', '♣', '♦', '♠'];
 
+// shuffles deck with its current number of cards
+function shuffle(array) {
+  for (let index = array.length - 1; index > 0; index -= 1) {
+    let otherIndex = Math.floor(Math.random() * (index + 1));
+    [array[index], array[otherIndex]] = [array[otherIndex], array[index]];
+  }
+  return array;
+}
+
 // creates full deck in order
 function initializeDeck() {
   let deck = [];
@@ -10,15 +19,7 @@ function initializeDeck() {
       deck.push([suit, value]);
     });
   });
-  return deck;
-}
-
-// shuffles (mutates) deck with its current number of cards
-function shuffle(array) {
-  for (let index = array.length - 1; index > 0; index -= 1) {
-    let otherIndex = Math.floor(Math.random() * (index + 1));
-    [array[index], array[otherIndex]] = [array[otherIndex], array[index]];
-  }
+  return shuffle(deck);
 }
 
 // Deal initial two cards
@@ -30,43 +31,36 @@ function dealInitialCards(deck) {
 }
 
 function prompt(message) {
-  console.log(`==>> ${message}`);
+  console.log(`  ==>>  ${message}`);
 }
 
 // Displays info on the first screen before game starts
-function gameInstructions() {
-  prompt('Game instructions go here.....');
+function gameIntro() {
+  console.log('  ---------------------------------------------------------\n');
+  prompt('Welcome to the game of Twenty-One!\n');
+  prompt('Game Instructions:\n');
+  console.log(`  The initial object of the game is to get the sum of your card 
+  values as close to, but not over, 21. You will play first, 
+  followed by the dealer. If you go over 21, you 'bust' (lose). 
+  If you 'stay', it is then the dealer's turn. The dealer may 
+  'bust' (you win). If the dealer chooses to 'stay', then whoever
+  has the higher sum hand value in the end, wins!\n`);
 }
 
 // Displays current hands, with dealer's last card hidden
 function displayHands(playerHand, dealerHand, showHidden) {
-  console.log('--------------------');
-  console.log(`PLAYER HAND :`);
-  playerHand.forEach(card => console.log(`${card[1]} of ${card[0]}`));
-  console.log('--------------------');
-  console.log(`DEALER HAND:`);
+  console.log('  ---------------------------------------------------------');
+  console.log(`  PLAYER HAND :`);
+  playerHand.forEach(card => console.log(`  ${card[1]} of ${card[0]}`));
+  console.log('  ---------------------------------------------------------');
+  console.log(`  DEALER HAND:`);
   if (showHidden === 'noShow') {
     for (let idx = 0; idx < dealerHand.length - 1; idx += 1) {
-      console.log(`${dealerHand[idx][1]} of ${dealerHand[idx][0]}`);
+      console.log(`  ${dealerHand[idx][1]} of ${dealerHand[idx][0]}`);
     }
-    console.log(`?? 🂠 ??`);
-  } else for (let card of dealerHand) {
-    console.log(`${card[1]} of ${card[0]}`);
-  }
-  console.log('--------------------');
-}
-
-function hitOrStay() {
-  let hitOrStayAnswer;
-
-  while (true) {
-    prompt("hit or stay? (h/s)");
-    hitOrStayAnswer = READLINE.question().trim().toLowerCase();
-    if (hitOrStayAnswer[0] === 'h' || hitOrStayAnswer[0] === 's') break;
-    prompt("Please enter a valid answer.");
-  }
-
-  return hitOrStayAnswer[0];
+    console.log(`  ?? 🂠 ??`);
+  } else for (let card of dealerHand) console.log(`  ${card[1]} of ${card[0]}`);
+  console.log('  ---------------------------------------------------------\n');
 }
 
 // adds card values in hand, accounting for Aces (1/11)
@@ -102,8 +96,9 @@ function playAgain() {
   let playAgainAnswer;
 
   while (true) {
+    console.log('  ---------------------------------------------------------');
     prompt("Would you like to play again (Y or N)?");
-    playAgainAnswer = READLINE.question().trim().toLowerCase();
+    playAgainAnswer = READLINE.question().toLowerCase();
     if (playAgainAnswer[0] === 'y' || playAgainAnswer[0] === 'n') break;
     prompt("Please enter a valid answer.");
   }
@@ -115,12 +110,13 @@ function playAgain() {
 while (true) {
   console.clear();
   let deck = initializeDeck();
-  shuffle(deck);
 
+  // initial hands deal
   let playerHand = dealInitialCards(deck);
   let dealerHand = dealInitialCards(deck);
+  let whoBusted;
 
-  gameInstructions();
+  gameIntro();
   prompt(`Press 'Enter' to start the game.`);
   READLINE.question();
 
@@ -128,14 +124,25 @@ while (true) {
   while (true) {
     console.clear();
     displayHands(playerHand, dealerHand, 'noShow');
-    let playerAnswer = hitOrStay();
+    let playerAnswer;
+
+    while (true) {
+      prompt("hit or stay? (h/s)");
+      playerAnswer = READLINE.question().toLowerCase();
+      if (['h', 's'].includes(playerAnswer)) break;
+      prompt("Please enter a valid answer.");
+    }
+
     if (playerAnswer === 's') {
       prompt("You chose to stay! Press 'Enter' to let DEALER to take a card.");
       READLINE.question();
       break;
     } else if (playerAnswer === 'h') {
       playerHand.push(deck.shift());
-      if (busted(playerHand)) break;
+      if (busted(playerHand)) {
+        whoBusted = "player";
+        break;
+      }
     }
   }
 
@@ -148,7 +155,10 @@ while (true) {
         prompt("DEALER stays. Press 'Enter' to find out who wins.");
         READLINE.question();
         break;
-      } else if (busted(dealerHand)) break;
+      } else if (busted(dealerHand)) {
+        whoBusted = "dealer";
+        break;
+      }
       else {
         dealerHand.push(deck.shift());
         displayHands(playerHand, dealerHand, 'noShow');
@@ -160,36 +170,25 @@ while (true) {
 
   console.clear();
   displayHands(playerHand, dealerHand, 'show');
+  let playerHandTotal = sumHandValue(playerHand);
+  let dealerHandTotal = sumHandValue(dealerHand);
 
   // COMPARE CARDS + DECLARE WINNER
-  if (busted(playerHand)) {
-    prompt("YOU BUSTED!!! YOUR hand's total value is above 21!!");
-  } else if (busted(dealerHand)) {
-    prompt("DEALER BUSTS!!! THE DEALER'S HAND'S total value is above 21!!");
-  } else {
-    let playerHandTotal = sumHandValue(playerHand);
-    let dealerHandTotal = sumHandValue(dealerHand);
-    if (playerHandTotal > dealerHandTotal) prompt('This means YOU won!');
-    else if (playerHandTotal < dealerHandTotal) prompt('This means DEALER won.');
-    else prompt('YOU and DEALER TIED.');
-    prompt(`YOUR HAND's total value was ${playerHandTotal}`);
-    prompt(`The DEALER's HAND's total value was ${dealerHandTotal}`);
-  }
+  if (whoBusted === 'player') {
+    console.log('  +++ YOU BUSTED! DEALER WINS! +++\n');
+  } else if (whoBusted === 'dealer') {
+    console.log('  +++ DEALER BUSTED! YOU WIN! +++\n');
+  } else if (playerHandTotal > dealerHandTotal) {
+    console.log('  +++ YOU WON! +++\n');
+  } else if (playerHandTotal < dealerHandTotal) {
+    console.log('  +++ DEALER WON +++\n');
+  } else console.log('  +++ YOU and DEALER TIED +++\n');
+
+  prompt(`YOUR HAND's total value was ${playerHandTotal}`);
+  prompt(`The DEALER's HAND's total value was ${dealerHandTotal}`);
+
 
   // play again decision
   let playAgainAnswer = playAgain();
   if (playAgainAnswer !== 'y') break;
 }
-
-
-/*
-1. Initialize deck
-2. Deal cards to player and dealer
-3. Player turn: hit or stay
-   - repeat until bust or stay
-4. If player bust, dealer wins.
-5. Dealer turn: hit or stay
-   - repeat until total >= 17
-6. If dealer busts, player wins.
-7. Compare cards and declare winner.
-*/
