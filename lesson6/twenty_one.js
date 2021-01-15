@@ -1,6 +1,10 @@
 const READLINE = require("readline-sync");
-const CARD_VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
+const CARD_VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack',
+  'Queen', 'King', 'Ace'];
 const SUITS = ['♥', '♣', '♦', '♠'];
+const WINNING_SCORE = 3;
+const DEALER_AUTO_STAY_VALUE = 17;
+const MAX_SUM_HAND_VALUE = 21;
 
 // shuffles deck with its current number of cards
 function shuffle(array) {
@@ -40,17 +44,17 @@ function gameIntro() {
   prompt('Welcome to the game of Twenty-One!\n');
   prompt('Game Instructions:\n');
   console.log(`  The initial object of the game is to get the sum of your card 
-  values as close to, but not over, 21. You will play first, 
-  followed by the dealer. If you go over 21, you 'bust' (lose). 
-  If you 'stay', it is then the dealer's turn. The dealer may 
-  'bust' (you win). If the dealer chooses to 'stay', then whoever
+  values as close to, but not over, ${MAX_SUM_HAND_VALUE}. You will play first, followed 
+  by the dealer. If you go over ${MAX_SUM_HAND_VALUE}, you 'bust' (lose). If you 'stay'
+  (pass before busting), it is then the dealer's turn. If the dealer 
+  'busts' (you win). If the dealer chooses to 'stay', then whoever
   has the higher sum hand value in the end, wins!\n
   The game here will consist of multiple rounds. Whoever scores 3
   points first, wins the game.\n`);
 }
 
 // Displays current hands, with dealer's last card hidden
-function displayHands(playerHand, dealerHand, gameStats , showHidden) {
+function displayHands(playerHand, dealerHand, gameStats, showHidden) {
   console.log('  ---------------------------------------------------------');
   console.log(`  GAME STATS :`);
   console.log(`  Your Score : ${gameStats["playerScore"]}`);
@@ -87,15 +91,27 @@ function sumHandValue(hand) {
 
   // correct for Aces
   cardValues.filter(value => value === "Ace").forEach(_ => {
-    if (sum > 21) sum -= 10;
+    if (sum > MAX_SUM_HAND_VALUE) sum -= 10;
   });
 
   return sum;
 }
 
-// checks to see if a hand's total value is above 21
+// Checks to see if a hand's total value is above MAX_SUM_HAND_VALUE
 function busted(hand) {
-  return (sumHandValue(hand) > 21);
+  return (sumHandValue(hand) > MAX_SUM_HAND_VALUE);
+}
+
+// Displays overall game winner
+function displayGameWinner(gameStats) {
+  console.log(`\n\n\n\n\n`);
+  if (gameStats["playerScore"] === WINNING_SCORE) {
+    console.log(`                  +++  YOU WON  +++`);
+  } else console.log(`                 +++  DEALER WON  +++`);
+
+  console.log(`                   Rounds Played: ${gameStats["roundNum"]}`);
+  console.log(`                   Your Score: ${gameStats["playerScore"]}`);
+  console.log(`                   Dealer Score: ${gameStats["dealerScore"]}`);
 }
 
 // Asks and validates if player wants to play again
@@ -103,26 +119,27 @@ function playAgain() {
   let playAgainAnswer;
 
   while (true) {
-    console.log('  ---------------------------------------------------------');
+    console.log('  \n-------------------------------------------------\n');
     prompt("Would you like to play again (Y or N)?");
     playAgainAnswer = READLINE.question().toLowerCase();
     if (playAgainAnswer[0] === 'y' || playAgainAnswer[0] === 'n') break;
     prompt("Please enter a valid answer.");
   }
 
-  return playAgainAnswer;
+  return playAgainAnswer[0];
 }
 
 // GAME SETUP LOOP
+console.clear();
+gameIntro();
+prompt(`Press 'Enter' to start the start the game.`);
+READLINE.question();
+
 while (true) {
-  console.clear();
-  gameIntro();
-  let gameStats = {playerScore: 0, dealerScore: 0, roundNum: 0};
+  let gameStats = { playerScore: 0, dealerScore: 0, roundNum: 0 };
 
-  prompt(`Press 'Enter' to start the start the game.`);
-  READLINE.question();
-
-  while (gameStats["playerScore"] < 4 && gameStats["dealerScore"] < 4) {
+  while (gameStats["playerScore"] < WINNING_SCORE && gameStats["dealerScore"] <
+    WINNING_SCORE) {
     let deck = initializeDeck();
 
     // initial hands deal
@@ -139,15 +156,15 @@ while (true) {
       while (true) {
         prompt("hit or stay? (h/s)");
         playerAnswer = READLINE.question().toLowerCase();
-        if (['h', 's'].includes(playerAnswer)) break;
+        if (playerAnswer[0] === 'h' || playerAnswer[0] === 's') break;
         prompt("Please enter a valid answer.");
       }
 
-      if (playerAnswer === 's') {
-        prompt("You chose to stay! Press 'Enter' to let DEALER to take a card.");
+      if (playerAnswer[0] === 's') {
+        prompt("You chose to stay! Press 'Enter' and DEALER will take a card.");
         READLINE.question();
         break;
-      } else if (playerAnswer === 'h') {
+      } else if (playerAnswer[0] === 'h') {
         playerHand.push(deck.shift());
         if (busted(playerHand)) {
           whoBusted = "player";
@@ -160,16 +177,15 @@ while (true) {
       // DEALER TURN LOOP
       while (true) {
         console.clear();
-        if (sumHandValue(dealerHand) >= 17) {
+        if (busted(dealerHand)) {
+          whoBusted = "dealer";
+          break;
+        } else if (sumHandValue(dealerHand) >= DEALER_AUTO_STAY_VALUE) {
           displayHands(playerHand, dealerHand, gameStats, 'noShow');
           prompt("DEALER stays. Press 'Enter' to find out who wins.");
           READLINE.question();
           break;
-        } else if (busted(dealerHand)) {
-          whoBusted = "dealer";
-          break;
-        }
-        else {
+        } else {
           dealerHand.push(deck.shift());
           displayHands(playerHand, dealerHand, gameStats, 'noShow');
           prompt("DEALER has taken a card. Press 'Enter' to continue.");
@@ -206,6 +222,10 @@ while (true) {
     prompt(`Press 'Enter' to continue.`);
     READLINE.question();
   }
+
+  console.clear();
+  displayGameWinner(gameStats);
+
 
   // play again decision
   let playAgainAnswer = playAgain();
