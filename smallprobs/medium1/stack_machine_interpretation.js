@@ -121,7 +121,7 @@ function minilang(string) {
       register = Number(array[i]);
     }
   };
-  return;
+  return register;
 }
 
 
