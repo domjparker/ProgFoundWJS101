@@ -49,6 +49,8 @@ numbers
 // TODO Algorithm
 /*
 function takes in number
+  if number is less than or equal to 2, return 1
+  return function(number - 1) + function(num - 2)
   
 */
 // TODO Code
