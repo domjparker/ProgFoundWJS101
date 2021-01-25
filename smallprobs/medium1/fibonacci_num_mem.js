@@ -63,6 +63,34 @@ function fibonacci(number) {
   return recursiveOperation(number);
 }
 
+// or without helper function....
+let lookupTable2 = {};
+
+function fibonacci(number) {
+  if (number <= 2) return 1;
+  else if (lookupTable2[number]) {
+    return lookupTable2[number];
+  } else {
+    lookupTable2[number] = fibonacci(number - 1) + fibonacci(number - 2);
+    return lookupTable2[number];
+  }
+}
+
+// and this one is abit more complex, but more efficient...
+
+let lookupTable3 = { 1: 1, 2: 1 };
+let invocations = 0; // to count how often we invoke our function
+
+function fibonacci(nth) {
+  invocations += 1; // Count your invocation
+  let nth1 = lookupTable3[nth - 1]; // Step 1
+  if (!nth1) nth1 = fibonacci(nth - 1); // Step 2
+
+  return (lookupTable3[nth] = nth1 + lookupTable3[nth - 2]); // Step 3 & 4
+}
+
+console.log(fibonacci(7), invocations); // 13 in 5 invocations
+
 fibonacci(1);       // 1
 fibonacci(2);       // 1
 fibonacci(3);       // 2
