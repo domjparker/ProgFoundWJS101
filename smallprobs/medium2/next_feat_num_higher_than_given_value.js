@@ -61,8 +61,12 @@ function takes in number
 
 const MAX_FEATURED_NUM = 9876543201;
 
-function oddDivisBy7(counterNum) {
-  return (counterNum % 2 !== 0 && counterNum % 7 === 0)
+function nextOddDivisBy7(number) {
+  do {
+    number += 1;
+   } while (number % 2 === 0 || number % 7 !== 0)
+  
+  return number;
 }
 
 function uniqueDigits(counter) {
@@ -72,21 +76,19 @@ function uniqueDigits(counter) {
   for (let digit of arr) {
     if (!obj[digit]) obj[digit] = digit;
   }
-  
+
   if (Object.keys(obj).length === arr.length) return true;
   else return false;
 }
 
 
 function featured(num) {
-  let counter = num + 1;
-
+  let counter = nextOddDivisBy7(num);
   while (counter <= MAX_FEATURED_NUM) {
-    if (oddDivisBy7(counter)) {
+    
       if (uniqueDigits(counter)) return counter;
-      else counter += 1;
-    }
-    else counter += 1;
+
+    else counter += 7;
   }
 
   return "There is no possible number that fulfills those requirements."
