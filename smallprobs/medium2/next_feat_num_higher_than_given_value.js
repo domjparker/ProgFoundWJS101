@@ -88,7 +88,7 @@ function featured(num) {
     
       if (uniqueDigits(counter)) return counter;
 
-    else counter += 7;
+    else counter += 14;
   }
 
   return "There is no possible number that fulfills those requirements."
