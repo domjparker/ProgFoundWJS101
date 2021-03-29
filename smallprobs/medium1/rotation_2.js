@@ -44,7 +44,7 @@ function takes in two arguments
 
 function rotateRightmostDigits(mainNum, numFromEnd) {
   let arrayNum = mainNum.toString().split('');
-  let rotatingDigit = arrayNum.splice(arrayNum.length - numFromEnd, 1).toString();
+  let rotatingDigit = arrayNum.splice(arrayNum.length - numFromEnd, 1);
   arrayNum.push(rotatingDigit); 
   return Number(arrayNum.join(''));
 }

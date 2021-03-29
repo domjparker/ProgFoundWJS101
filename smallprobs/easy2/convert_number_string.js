@@ -35,31 +35,32 @@ return result of reversing array and joining into a string.
 function integerToString(num) {
   let digits = [];
   do {
-    digits.push(num % 10);
+    digits.unshift(num % 10);
     num = Math.floor(num / 10);
   } while (num);
-  let result = digits.reverse().join(''); 
-  return result;
+  return digits.join(''); 
 }
 
-/*
-alteratively, could be written like this...
 
-const DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+// alteratively, could be written like this...
 
-function integerToString(number) {
-  let result = '';
+// const DIGITS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-  do {
-    let remainder = number % 10;
-    number = Math.floor(number / 10);
+// function integerToString(number) {
+//   let result = '';
 
-    result = DIGITS[remainder] + result;
-  } while (number > 0);
+//   do {
+//     let remainder = number % 10;
+//     console.log(remainder)
+//     number = Math.floor(number / 10);
+//     console.log(number)
+//     result = DIGITS[remainder] + result;
+//     console.log(result)
+//   } while (number > 0);
 
-  return result;
-}
-*/
+//   return result;
+// }
+
 
 console.log(integerToString(4321));      // "4321"
 console.log(integerToString(0));         // "0"

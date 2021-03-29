@@ -27,7 +27,7 @@ console.log(isOdd(7)); // => true
 // TODO Code
 
 function isOdd(num) {
-  return Math.abs(num % 2 === 1)
+  return (Math.abs(num) % 2 === 1);
 }
 
 console.log(isOdd(2)); // => false

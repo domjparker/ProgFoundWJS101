@@ -36,9 +36,11 @@ function integerToString(number) {
 
   do {
     let remainder = number % 10;
+    console.log(remainder)
     number = Math.floor(number / 10);
-
+    console.log(number)
     result = DIGITS[remainder] + result;
+    console.log(result)
   } while (number > 0);
 
   return result;
@@ -58,3 +60,22 @@ function signedIntegerToString(integer) {
 console.log(signedIntegerToString(4321) === "+4321"); // true
 console.log(signedIntegerToString(-123) === "-123"); // true
 console.log(signedIntegerToString(0) === "0"); // true
+
+
+//or...
+
+function signedIntegerToString(int) {
+    if (int === 0) return "0";
+    let num = int;
+    let numStr = "";
+    if (Math.sign(int) === -1) int = -int;
+    do {
+      numStr = (int % 10) + numStr;
+      // console.log(numStr)
+      int = Math.floor(int / 10);
+    } while (int > 0);
+    if (Math.sign(num) === -1) numStr = "-" + numStr; 
+    else numStr = "+" + numStr;
+    // console.log(numStr)
+    return numStr;
+}

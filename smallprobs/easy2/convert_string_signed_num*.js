@@ -82,3 +82,18 @@ function stringToSignedInteger(string) {
 console.log(stringToSignedInteger("4321") === 4321); // logs true
 console.log(stringToSignedInteger("-570") === -570); // logs true
 console.log(stringToSignedInteger("+100") === 100); // logs true
+
+
+const NUM_ARR = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+function stringToSignedInteger(strNum) {
+  let num = 0;
+  for (let i = 0; i < strNum.length; i += 1) {
+    if (strNum[i] === "-" || strNum[i] === "+") continue;
+    let digit = NUM_ARR[strNum[i]];
+    num = (num * 10) + digit;
+  }
+  if (strNum[0] === "-") num = num -num;
+  console.log(num)
+  return num;
+}

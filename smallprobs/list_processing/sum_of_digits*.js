@@ -54,3 +54,19 @@ function sum(num) {
 sum(23);           // 5
 sum(496);          // 19
 sum(123456789);    // 45
+
+// or ...
+
+function sum(int) {
+  let result = 0;
+  int.toString().split("").forEach(num => {
+    return result += Number(num);
+  });
+  return result;
+}
+
+// or ..
+
+function sum(int) {
+  return int.toString().split("").reduce((a, c) => a + Number(c), 0);
+}

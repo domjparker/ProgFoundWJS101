@@ -6,6 +6,7 @@ F(n) = F(n - 1) + F(n - 2) where n > 2
 
 This simple sequence can be computed using a recursive function. A recursive function is one in which the function calls itself. For example, the following function is a recursive function that computes the sum of all integers between 1 and n:
 function sum(num) {
+  console.log(num)
   if ( num === 1) {
     return 1;
   }

@@ -40,6 +40,7 @@ function prompt(message) {
 
 // Displays info on the first screen before game starts
 function gameIntro() {
+  console.clear();
   console.log('  ---------------------------------------------------------\n');
   prompt('Welcome to the game of Twenty-One!\n');
   prompt('Game Instructions:\n');
@@ -65,13 +66,24 @@ function displayHands(playerHand, dealerHand, gameStats, showHidden) {
   playerHand.forEach(card => console.log(`  ${card[1]} of ${card[0]}`));
   console.log('  ---------------------------------------------------------');
   console.log(`  DEALER HAND:`);
-  if (showHidden === 'noShow') {
+  if (!showHidden) {
     for (let idx = 0; idx < dealerHand.length - 1; idx += 1) {
       console.log(`  ${dealerHand[idx][1]} of ${dealerHand[idx][0]}`);
     }
     console.log(`  ?? 🂠 ??`);
   } else for (let card of dealerHand) console.log(`  ${card[1]} of ${card[0]}`);
   console.log('  ---------------------------------------------------------\n');
+}
+
+function hitOrStay() {
+  let answer;
+  while (true) {
+    prompt("hit or stay? (h/s)");
+    answer = READLINE.question().toLowerCase();
+    if (answer[0] === 'h' || answer[0] === 's') break;
+    prompt("Please enter a valid answer.");
+  }
+  return answer[0];
 }
 
 // adds card values in hand, accounting for Aces (1/11)
@@ -130,12 +142,12 @@ function playAgain() {
 }
 
 // GAME SETUP LOOP
-console.clear();
 gameIntro();
 prompt(`Press 'Enter' to start the start the game.`);
 READLINE.question();
+let playing = true;
 
-while (true) {
+while (playing) {
   let gameStats = { playerScore: 0, dealerScore: 0, roundNum: 0 };
 
   while (gameStats["playerScore"] < WINNING_SCORE && gameStats["dealerScore"] <
@@ -150,30 +162,21 @@ while (true) {
     // PLAYER TURN LOOP
     while (true) {
       console.clear();
-      displayHands(playerHand, dealerHand, gameStats, 'noShow');
-      let playerAnswer;
+      displayHands(playerHand, dealerHand, gameStats, false);
 
-      while (true) {
-        prompt("hit or stay? (h/s)");
-        playerAnswer = READLINE.question().toLowerCase();
-        if (playerAnswer[0] === 'h' || playerAnswer[0] === 's') break;
-        prompt("Please enter a valid answer.");
-      }
-
-      if (playerAnswer[0] === 's') {
+      if (hitOrStay()[0] === 's') {
         prompt("You chose to stay! Press 'Enter' and DEALER will take a card.");
         READLINE.question();
         break;
-      } else if (playerAnswer[0] === 'h') {
-        playerHand.push(deck.shift());
-        if (busted(playerHand)) {
-          whoBusted = "player";
-          break;
-        }
+      } else playerHand.push(deck.shift());
+
+      if (busted(playerHand)) {
+        whoBusted = "player";
+        break;
       }
     }
 
-    if (!busted(playerHand)) {
+    if (whoBusted === "player") {
       // DEALER TURN LOOP
       while (true) {
         console.clear();
@@ -181,13 +184,13 @@ while (true) {
           whoBusted = "dealer";
           break;
         } else if (sumHandValue(dealerHand) >= DEALER_AUTO_STAY_VALUE) {
-          displayHands(playerHand, dealerHand, gameStats, 'noShow');
+          displayHands(playerHand, dealerHand, gameStats, false);
           prompt("DEALER stays. Press 'Enter' to find out who wins.");
           READLINE.question();
           break;
         } else {
           dealerHand.push(deck.shift());
-          displayHands(playerHand, dealerHand, gameStats, 'noShow');
+          displayHands(playerHand, dealerHand, gameStats, false);
           prompt("DEALER has taken a card. Press 'Enter' to continue.");
           READLINE.question();
         }
@@ -195,7 +198,7 @@ while (true) {
     }
 
     console.clear();
-    displayHands(playerHand, dealerHand, gameStats, 'show');
+    displayHands(playerHand, dealerHand, gameStats, true);
     let playerHandTotal = sumHandValue(playerHand);
     let dealerHandTotal = sumHandValue(dealerHand);
 
@@ -229,5 +232,5 @@ while (true) {
 
   // play again decision
   let playAgainAnswer = playAgain();
-  if (playAgainAnswer !== 'y') break;
+  if (playAgainAnswer !== 'y') playing = false;
 }

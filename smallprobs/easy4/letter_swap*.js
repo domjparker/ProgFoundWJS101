@@ -61,3 +61,14 @@ let swap = (string) => {
 swap('Oh what a wonderful day it is');  // "hO thaw a londerfuw yad ti si"
 swap('Abcde');                          // "ebcdA"
 swap('a');                              // "a"
+
+
+function swap(str) {
+  let arr = str.split(" ");
+  let newArr = arr.map(word => {
+    if (word.length < 2) return word;
+    else if (word.length === 2) return word[1] + word[0];
+    else return word[word.length - 1] + word.slice(1, word.length - 1) + word[0];
+  })
+  return newArr.join(" ");
+}
